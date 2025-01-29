@@ -12,7 +12,7 @@ import (
 type Config struct {
 	KillRunner struct {
 		Config struct {
-			Logging bool `yaml:"logging"`
+			Logging int `yaml:"logging"` // Configure log level between 0-2
 		} `yaml:"config"`
 		User struct {
 			Username string `yaml:"username"`
@@ -26,7 +26,7 @@ func DefaultConfig() Config {
 	return Config{
 		KillRunner: struct {
 			Config struct {
-				Logging bool `yaml:"logging"`
+				Logging int `yaml:"logging"`
 			} `yaml:"config"`
 			User struct {
 				Username string `yaml:"username"`
@@ -34,8 +34,8 @@ func DefaultConfig() Config {
 			} `yaml:"user"`
 		}{
 			Config: struct {
-				Logging bool `yaml:"logging"`
-			}{Logging: true},
+				Logging int `yaml:"logging"`
+			}{Logging: 1},
 			User: struct {
 				Username string `yaml:"username"`
 				Password string `yaml:"password"`
