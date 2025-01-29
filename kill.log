@@ -1,6 +1,14 @@
-2025/01/29 13:25:37 log.go:39: [INFO] Logging initialized at level 3
-2025/01/29 13:25:37 log.go:55: Configuration file kill.config does not exist. Creating...
-2025/01/29 13:25:37 log.go:55: Configuration file kill.config initialized successfully.
-2025/01/29 13:25:37 log.go:77: [WARNING] Database killdb.sqlite does not exist. Creating...
-2025/01/29 13:25:37 log.go:77: [WARNING] Database killdb.sqlite initialized successfully.
-2025/01/29 13:25:37 log.go:77: [WARNING] kill-runner is ready to use.
+2025/01/29 13:29:00 log.go:39: [INFO] Logging initialized at level 3
+2025/01/29 13:29:00 log.go:55: Configuration file kill.config does not exist. Creating...
+2025/01/29 13:29:00 log.go:55: Configuration file kill.config initialized successfully.
+2025/01/29 13:29:00 log.go:77: [WARNING] Database killdb.sqlite does not exist. Creating...
+2025/01/29 13:29:00 log.go:77: [WARNING] Database killdb.sqlite initialized successfully.
+2025/01/29 13:29:00 log.go:77: [WARNING] kill-runner is ready to use.
+2025/01/29 13:29:16 log.go:39: [INFO] Logging initialized at level 3
+2025/01/29 13:29:16 log.go:55: Configuration file kill.config exists. Skipping initialization.
+2025/01/29 13:29:16 db.go:46: Database killdb.sqlite exists. Connection established.
+2025/01/29 13:29:16 log.go:77: [WARNING] kill-runner is ready to use.
+2025/01/29 13:29:45 log.go:39: [INFO] Logging initialized at level 2
+2025/01/29 13:29:45 log.go:52: Configuration file kill.config exists. Skipping initialization.
+2025/01/29 13:29:45 db.go:46: Database killdb.sqlite exists. Connection established.
+2025/01/29 13:29:45 log.go:74: [WARNING] kill-runner is ready to use.

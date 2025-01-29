@@ -1,6 +1,0 @@
-2025/01/29 11:49:28 log.go:41: Logging initialized at level 1
-2025/01/29 11:49:28 db.go:15: Database killdb.sqlite does not exist. Creating...
-2025/01/29 11:49:28 db.go:36: Database killdb.sqlite initialized successfully.
-2025/01/29 11:49:34 log.go:41: Logging initialized at level 1
-2025/01/29 11:49:34 db.go:46: Database killdb.sqlite exists. Connection established.
-2025/01/29 11:49:46 log.go:41: Logging initialized at level 1
