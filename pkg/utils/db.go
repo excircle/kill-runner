@@ -10,12 +10,12 @@ import (
 )
 
 // ValidateDB checks if the SQLite database exists, and creates it with the necessary schema if not.
-func ValidateDB(dbPath string) (*sql.DB, error) {
-	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
-		log.Printf("Database %s does not exist. Creating...", dbPath)
+func ValidateDB() (*sql.DB, error) {
+	if _, err := os.Stat(DbPath); os.IsNotExist(err) {
+		LogEvent(1, fmt.Sprintf("Database %s does not exist. Creating...", DbPath))
 
 		// Open a connection
-		db, err := sql.Open("sqlite3", dbPath)
+		db, err := sql.Open("sqlite3", DbPath)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create database: %v", err)
 		}
@@ -33,16 +33,16 @@ func ValidateDB(dbPath string) (*sql.DB, error) {
 			return nil, fmt.Errorf("failed to create users table: %v", err)
 		}
 
-		log.Printf("Database %s initialized successfully.", dbPath)
+		LogEvent(1, "Database %s initialized successfully.", DbPath)
 		return db, nil
 	}
 
 	// If database exists, open a connection
-	db, err := sql.Open("sqlite3", dbPath)
+	db, err := sql.Open("sqlite3", DbPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open existing database: %v", err)
 	}
 
-	log.Printf("Database %s exists. Connection established.", dbPath)
+	log.Printf("Database %s exists. Connection established.", DbPath)
 	return db, nil
 }

@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -35,7 +34,7 @@ func DefaultConfig() Config {
 		}{
 			Config: struct {
 				Logging int `yaml:"logging"`
-			}{Logging: 1},
+			}{Logging: 3},
 			User: struct {
 				Username string `yaml:"username"`
 				Password string `yaml:"password"`
@@ -47,7 +46,8 @@ func DefaultConfig() Config {
 // ValidateConfig checks if the configuration file exists, and if not, creates it with default values.
 func ValidateConfig(configPath string) error {
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		log.Printf("Configuration file %s does not exist. Creating...", configPath)
+		// Save message to temp buffer to write to log later
+		TempLogBuffer = append(TempLogBuffer, fmt.Sprintf("Configuration file %s does not exist. Creating...", configPath))
 
 		// Generate default config
 		defaultConfig := DefaultConfig()
@@ -62,9 +62,9 @@ func ValidateConfig(configPath string) error {
 			return fmt.Errorf("failed to write default config: %v", err)
 		}
 
-		log.Printf("Configuration file %s initialized successfully.", configPath)
+		TempLogBuffer = append(TempLogBuffer, fmt.Sprintf("Configuration file %s initialized successfully.", configPath))
 	} else {
-		log.Printf("Configuration file %s exists. Skipping initialization.", configPath)
+		TempLogBuffer = append(TempLogBuffer, fmt.Sprintf("Configuration file %s exists. Skipping initialization.", configPath))
 	}
 	return nil
 }
