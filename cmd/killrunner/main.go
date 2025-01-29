@@ -4,10 +4,9 @@ import (
 	"log"
 	"os"
 
-	"gopkg.in/yaml.v3"
-
-	"github.com/excircle/kill-runner/cmd"
+	"github.com/excircle/kill-runner/cmd/killrunner"
 	"github.com/excircle/kill-runner/pkg/utils"
+	"gopkg.in/yaml.v3"
 )
 
 func main() {
@@ -57,5 +56,5 @@ func main() {
 	//----------------------------------
 	// CLI Exec
 	//----------------------------------
-	cmd.Execute()
+	killrunner.Execute()
 }
