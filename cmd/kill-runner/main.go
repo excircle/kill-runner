@@ -47,10 +47,10 @@ func main() {
 	//----------------------------------
 	db, err := utils.ValidateDB()
 	if err != nil {
-		utils.LogEvent(1, "Error initializing database:", err)
+		utils.LogEvent(2, "Error initializing database:", err)
 	}
 	defer db.Close()
 
-	utils.LogEvent(1, "kill-runner is ready to use.")
+	utils.LogEvent(0, "kill-runner is ready to use.")
 
 }

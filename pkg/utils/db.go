@@ -3,7 +3,6 @@ package utils
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 
 	_ "github.com/mattn/go-sqlite3" // SQLite driver
@@ -33,7 +32,7 @@ func ValidateDB() (*sql.DB, error) {
 			return nil, fmt.Errorf("failed to create users table: %v", err)
 		}
 
-		LogEvent(1, "Database %s initialized successfully.", DbPath)
+		LogEvent(0, "Database %s initialized successfully.", DbPath)
 		return db, nil
 	}
 
@@ -43,6 +42,6 @@ func ValidateDB() (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to open existing database: %v", err)
 	}
 
-	log.Printf("Database %s exists. Connection established.", DbPath)
+	LogEvent(0, "Database %s exists. Connection established.", DbPath)
 	return db, nil
 }

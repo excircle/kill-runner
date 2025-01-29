@@ -34,7 +34,7 @@ func DefaultConfig() Config {
 		}{
 			Config: struct {
 				Logging int `yaml:"logging"`
-			}{Logging: 3},
+			}{Logging: 2},
 			User: struct {
 				Username string `yaml:"username"`
 				Password string `yaml:"password"`
