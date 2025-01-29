@@ -1,0 +1,9 @@
+# Dependencies
+go.sum
+
+# Editor/IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
