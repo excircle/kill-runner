@@ -6,6 +6,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/excircle/kill-runner/cmd"
 	"github.com/excircle/kill-runner/pkg/utils"
 )
 
@@ -53,4 +54,8 @@ func main() {
 
 	utils.LogEvent(0, "kill-runner is ready to use.")
 
+	//----------------------------------
+	// CLI Exec
+	//----------------------------------
+	cmd.Execute()
 }
