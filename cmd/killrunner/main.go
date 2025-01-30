@@ -1,10 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
-	"github.com/excircle/kill-runner/cmd/killrunner"
+	killrunner "github.com/excircle/kill-runner/cmd"
 	"github.com/excircle/kill-runner/pkg/utils"
 	"gopkg.in/yaml.v3"
 )
@@ -52,6 +53,18 @@ func main() {
 	defer db.Close()
 
 	utils.LogEvent(0, "kill-runner is ready to use.")
+
+	//----------------------------------
+	// Check Kube Connectivity
+	//----------------------------------
+	utils.SetGlobalKubeConfig(confStruct.KillRunner.Config.Kubeconfig)
+	err = utils.KubeConnect(utils.Kubeconfig)
+	if err != nil {
+		utils.LogEvent(2, "Error connecting to Kubernetes:", err)
+		log.Fatalf("Error connecting to Kubernetes: %v", err)
+	} else {
+		utils.LogEvent(0, fmt.Sprintf("Successfully connected to Kubernetes using %s.", utils.Kubeconfig))
+	}
 
 	//----------------------------------
 	// CLI Exec

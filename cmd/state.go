@@ -1,4 +1,4 @@
-package main
+package killrunner
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("state called")
+		fmt.Println("state called, with args:", args)
 	},
 }
 

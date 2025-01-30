@@ -11,7 +11,8 @@ import (
 type Config struct {
 	KillRunner struct {
 		Config struct {
-			Logging int `yaml:"logging"` // Configure log level between 0-2
+			Logging    int    `yaml:"logging"` // Configure log level between 0-2
+			Kubeconfig string `yaml:"kubeconfig"`
 		} `yaml:"config"`
 		User struct {
 			Username string `yaml:"username"`
@@ -25,7 +26,8 @@ func DefaultConfig() Config {
 	return Config{
 		KillRunner: struct {
 			Config struct {
-				Logging int `yaml:"logging"`
+				Logging    int    `yaml:"logging"`
+				Kubeconfig string `yaml:"kubeconfig"`
 			} `yaml:"config"`
 			User struct {
 				Username string `yaml:"username"`
@@ -33,8 +35,9 @@ func DefaultConfig() Config {
 			} `yaml:"user"`
 		}{
 			Config: struct {
-				Logging int `yaml:"logging"`
-			}{Logging: 2},
+				Logging    int    `yaml:"logging"`
+				Kubeconfig string `yaml:"kubeconfig"`
+			}{Logging: 2, Kubeconfig: "~/.kube/config"},
 			User: struct {
 				Username string `yaml:"username"`
 				Password string `yaml:"password"`
