@@ -17,3 +17,16 @@ func StageQ1() {
 
 	fmt.Println("Successfully staged q1!")
 }
+
+func UnstageQ1() {
+	fmt.Println("Unstaging Kubernetes Question 1...")
+
+	// Example: Interacting with Kubernetes
+	// err := cluster.DeleteNamespace("q1-namespace")
+	// if err != nil {
+	// 	fmt.Println("Error deleting namespace:", err)
+	// 	return
+	// }
+
+	fmt.Println("Successfully unstaged q1!")
+}

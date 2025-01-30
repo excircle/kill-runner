@@ -25,3 +25,33 @@
 2025/01/30 10:58:11 log.go:74: [INFO] kill-runner is ready to use.
 2025/01/30 10:58:11 log.go:74: [INFO] Successfully connected! Found 3 node(s).
 2025/01/30 10:58:11 log.go:74: [INFO] Successfully connected to Kubernetes using /Users/akalaj/.kube/config.
+2025/01/30 11:08:49 log.go:39: [INFO] Logging initialized at level 2
+2025/01/30 11:08:49 log.go:52: Configuration file kill.config exists. Skipping initialization.
+2025/01/30 11:08:49 log.go:74: [INFO] Database killdb.sqlite exists. Connection established.
+2025/01/30 11:08:49 log.go:74: [INFO] kill-runner is ready to use.
+2025/01/30 11:08:49 log.go:74: [INFO] Successfully connected! Found 3 node(s).
+2025/01/30 11:08:49 log.go:74: [INFO] Successfully connected to Kubernetes using /Users/akalaj/.kube/config.
+2025/01/30 11:17:19 log.go:39: [INFO] Logging initialized at level 2
+2025/01/30 11:17:19 log.go:52: Configuration file kill.config exists. Skipping initialization.
+2025/01/30 11:17:19 log.go:74: [INFO] Database killdb.sqlite exists. Connection established.
+2025/01/30 11:17:19 log.go:74: [INFO] kill-runner is ready to use.
+2025/01/30 11:17:19 log.go:74: [INFO] Successfully connected! Found 3 node(s).
+2025/01/30 11:17:19 log.go:74: [INFO] Successfully connected to Kubernetes using /Users/akalaj/.kube/config.
+2025/01/30 11:17:26 log.go:39: [INFO] Logging initialized at level 2
+2025/01/30 11:17:26 log.go:52: Configuration file kill.config exists. Skipping initialization.
+2025/01/30 11:17:26 log.go:74: [INFO] Database killdb.sqlite exists. Connection established.
+2025/01/30 11:17:26 log.go:74: [INFO] kill-runner is ready to use.
+2025/01/30 11:17:26 log.go:74: [INFO] Successfully connected! Found 3 node(s).
+2025/01/30 11:17:26 log.go:74: [INFO] Successfully connected to Kubernetes using /Users/akalaj/.kube/config.
+2025/01/30 11:22:08 log.go:39: [INFO] Logging initialized at level 2
+2025/01/30 11:22:08 log.go:52: Configuration file kill.config exists. Skipping initialization.
+2025/01/30 11:22:08 log.go:74: [INFO] Database killdb.sqlite exists. Connection established.
+2025/01/30 11:22:08 log.go:74: [INFO] kill-runner is ready to use.
+2025/01/30 11:22:08 log.go:74: [INFO] Successfully connected! Found 3 node(s).
+2025/01/30 11:22:08 log.go:74: [INFO] Successfully connected to Kubernetes using /Users/akalaj/.kube/config.
+2025/01/30 11:22:13 log.go:39: [INFO] Logging initialized at level 2
+2025/01/30 11:22:13 log.go:52: Configuration file kill.config exists. Skipping initialization.
+2025/01/30 11:22:13 log.go:74: [INFO] Database killdb.sqlite exists. Connection established.
+2025/01/30 11:22:13 log.go:74: [INFO] kill-runner is ready to use.
+2025/01/30 11:22:13 log.go:74: [INFO] Successfully connected! Found 3 node(s).
+2025/01/30 11:22:13 log.go:74: [INFO] Successfully connected to Kubernetes using /Users/akalaj/.kube/config.
