@@ -1,9 +1,11 @@
 package questions
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/excircle/kill-runner/pkg/cluster"
 )
@@ -14,6 +16,7 @@ var green string = "\033[32m" // ANSI escape code for green
 var reset string = "\033[0m"  // Reset color
 var namespace string = "q1-namespace"
 var skip bool = false
+var doNothing bool
 
 var prompt string = fmt.Sprintf(`#----------------------------------
 # Scenario 1 - Obtain Namespaces
@@ -78,19 +81,82 @@ func StartQ1() {
 func UnstageQ1() {
 	fmt.Printf("[%s] Unstaging Kubernetes Question 1...\n", marker)
 
-	// Undo Q1 Namespace
-	fmt.Printf("[%s] Deleting %s!\n", marker, marker)
-	err := cluster.DestroyNamespace(namespace, marker)
-	if err != nil {
-		fmt.Println("Error deleting namespace:", err)
-		return
+	// Check if Q1 Namespace exists
+	if !cluster.NamespaceExists(namespace) {
+		fmt.Printf("[%s] Namespace %s does not exist!\n", marker, namespace)
+	} else {
+		// Remove Q1 Namespace
+		fmt.Printf("[%s] Deleting %s!\n", marker, marker)
+		err := cluster.DestroyNamespace(namespace, marker)
+		if err != nil {
+			log.Fatalf("Error deleting namespace:", err)
+		}
 	}
 
 	// Remove Q1 dir
-	err = os.RemoveAll(marker)
-	if err != nil {
-		log.Fatalf("Failed to remove Q1 dir: %v", err)
+	if _, err := os.Stat(marker); os.IsNotExist(err) {
+		fmt.Printf("[%s] Answer directory is already gone!\n", marker)
+	} else {
+		err = os.RemoveAll(marker)
+		if err != nil {
+			log.Fatalf("Failed to remove Q1 dir: %v", err)
+		}
 	}
 
 	fmt.Printf("[%s] Successfully unstaged %s scenario!\n", marker, marker)
+}
+
+func ValidateQ1() {
+	fmt.Printf("[%s] Validating Kubernetes Question 1...\n", marker)
+
+	// Check if "Q1/namespaces.txt" exists
+	if _, err := os.Stat(fmt.Sprintf("%s/namespaces.txt", marker)); os.IsNotExist(err) {
+		fmt.Printf("[%s] %s/namespaces.txt not found. TRY AGAIN!\n", marker, marker)
+		os.Exit(0)
+	} else {
+		fmt.Printf("[%s] %s/namespaces.txt found!\n", marker, marker)
+	}
+
+	// Check if namespaces exist in the file
+	namespaces := []string{
+		"calico-apiserver", "calico-system", "default", "kube-node-lease",
+		"kube-public", "kube-system", "local-path-storage", "q1-namespace", "tigera-operator",
+	}
+
+	// Read the file into a map for quick lookup
+	answerFile := fmt.Sprintf("%s/namespaces.txt", marker)
+	file, err := os.Open(answerFile)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	var lines []string
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println("Error reading file:", err)
+		return
+	}
+
+	// Search for terms
+	for _, ns := range namespaces {
+		found := false
+		for _, line := range lines {
+			if strings.Contains(line, ns) {
+				found = true
+			}
+		}
+		if !found {
+			fmt.Printf("[FAILURE] namespace not found. TRY AGAIN!\n")
+			os.Exit(0)
+		}
+	}
+	// Print validation complete
+	fmt.Printf("[%s] namespace check suceeded!\n", marker)
+	fmt.Printf("[%s] Validation complete!\n", marker)
 }
