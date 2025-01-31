@@ -32,6 +32,21 @@ func getKubernetesClient() (*kubernetes.Clientset, error) {
 	return clientset, nil
 }
 
+// NamespaceExists checks if a Kubernetes namespace exists
+func NamespaceExists(name string) bool {
+	clientset, err := getKubernetesClient()
+	if err != nil {
+		return false
+	}
+
+	_, err = clientset.CoreV1().Namespaces().Get(context.TODO(), name, metav1.GetOptions{})
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
 // CreateNamespace creates a Kubernetes namespace
 func CreateNamespace(name string, question string) error {
 	clientset, err := getKubernetesClient()
