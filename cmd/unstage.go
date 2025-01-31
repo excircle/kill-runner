@@ -27,10 +27,10 @@ logic for the specified question. Example usage:
 		switch question {
 		case "q1":
 			questions.UnstageQ1()
-		// case "q2":
-		// 	questions.StageQ2()
+		case "q2":
+			questions.UnstageQ2()
 		// case "q3":
-		// 	questions.StageQ3()
+		// 	questions.UnstageQ3()
 		default:
 			fmt.Println("Invalid question. Please use q1, q2, or q3.")
 			os.Exit(1)
