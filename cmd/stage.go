@@ -27,8 +27,8 @@ logic for the specified question. Example usage:
 		switch question {
 		case "q1":
 			questions.StageQ1()
-		// case "q2":
-		// 	questions.StageQ2()
+		case "q2":
+			questions.StageQ2()
 		// case "q3":
 		// 	questions.StageQ3()
 		default:

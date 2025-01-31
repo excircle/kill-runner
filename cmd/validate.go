@@ -26,10 +26,10 @@ var validateCmd = &cobra.Command{
 		switch question {
 		case "q1":
 			questions.ValidateQ1()
-		// case "q2":
-		// 	questions.StartQ2()
+		case "q2":
+			questions.ValidateQ2()
 		// case "q3":
-		// 	questions.StartQ3()
+		// 	questions.ValidateQ3()
 		default:
 			fmt.Println("Invalid question. Please use q1, q2, or q3.")
 			os.Exit(1)

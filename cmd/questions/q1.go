@@ -10,38 +10,42 @@ import (
 	"github.com/excircle/kill-runner/pkg/cluster"
 )
 
-var marker string = "Q1"
-var red string = "\033[31m"   // ANSI escape code for red
-var green string = "\033[32m" // ANSI escape code for green
-var reset string = "\033[0m"  // Reset color
-var namespace string = "q1-namespace"
-var skip bool = false
-var doNothing bool
+type q1vars struct {
+	marker   string
+	scenario string
+	skip     bool
+	prompt   string
+}
 
-var prompt string = fmt.Sprintf(`#----------------------------------
+var q1 = q1vars{
+	marker:   "Q1",
+	scenario: "1",
+	skip:     false,
+	prompt: fmt.Sprintf(`#----------------------------------
 # Scenario 1 - Obtain Namespaces
 #----------------------------------
 
 %sCONTEXT%s:   The DevOps team would like to get the list of all Namespaces in the present working cluster.
 %sOBJECTIVE%s: Get the list and save it to './q1/namespaces.txt'.
-`, red, reset, green, reset)
+`, red, reset, green, reset),
+}
 
 // StageQ1 runs the logic for question 1
 func StageQ1() {
-	fmt.Printf("[%s] Staging Scenario 1...\n", marker)
+	fmt.Printf("[%s] Staging Scenario 1...\n", q1.marker)
 
 	// Check if Q1 dir exists
-	if _, err := os.Stat(marker); !os.IsNotExist(err) {
-		skip = true
+	if _, err := os.Stat(q1.marker); !os.IsNotExist(err) {
+		q1.skip = true
 	}
 
-	if !skip {
+	if !q1.skip {
 		pwd, err := os.Getwd()
 		if err != nil {
 			log.Fatalf("Failed to get present working directory: %v", err)
 		}
 
-		folderPath := fmt.Sprintf("%s/%s", pwd, marker)
+		folderPath := fmt.Sprintf("%s/%s", pwd, q1.marker)
 
 		err = os.Mkdir(folderPath, 0775) // Set perms
 		if err != nil {
@@ -49,72 +53,74 @@ func StageQ1() {
 		}
 	}
 
-	fmt.Printf("[%s] Successfully created Q1 dir!\n", marker)
+	fmt.Printf("[%s] Successfully created Q1 dir!\n", q1.marker)
 
 	// Check if Q1 Namespace exists
+	namespace := fmt.Sprintf("q%s-ns", q1.scenario)
 	if cluster.NamespaceExists(namespace) {
-		fmt.Printf("[%s] Namespace %s already exists!\n", marker, namespace)
-		skip = true
+		fmt.Printf("[%s] Namespace %s already exists!\n", q1.marker, namespace)
+		q1.skip = true
 	} else {
-		fmt.Printf("[%s] Namespace does not exist!\n", marker)
-		skip = false
+		fmt.Printf("[%s] Namespace does not exist!\n", q1.marker)
+		q1.skip = false
 	}
 
-	if !skip {
+	if !q1.skip {
 		// Create Q1 Namespace
-		err := cluster.CreateNamespace(namespace, marker)
+		err := cluster.CreateNamespace(namespace, q1.marker)
 		if err != nil {
 			fmt.Println("Error setting up namespace:", err)
 			return
 		}
 
 	}
-	fmt.Printf("[%s] Successfully staged Q1 scenario!\n", marker)
-	fmt.Printf("[%s] Please run 'kr start q1'!\n", marker)
+	fmt.Printf("[%s] Successfully staged Q1 scenario!\n", q1.marker)
+	fmt.Printf("[%s] Please run 'kr start q1'!\n", q1.marker)
 
 }
 
 func StartQ1() {
-	fmt.Println(prompt)
+	fmt.Println(q1.prompt)
 }
 
 func UnstageQ1() {
-	fmt.Printf("[%s] Unstaging Kubernetes Question 1...\n", marker)
+	fmt.Printf("[%s] Unstaging Kubernetes Question 1...\n", q1.marker)
 
 	// Check if Q1 Namespace exists
+	namespace := fmt.Sprintf("q%s-ns", q1.scenario)
 	if !cluster.NamespaceExists(namespace) {
-		fmt.Printf("[%s] Namespace %s does not exist!\n", marker, namespace)
+		fmt.Printf("[%s] Namespace %s does not exist!\n", q1.marker, namespace)
 	} else {
 		// Remove Q1 Namespace
-		fmt.Printf("[%s] Deleting %s!\n", marker, marker)
-		err := cluster.DestroyNamespace(namespace, marker)
+		fmt.Printf("[%s] Deleting %s!\n", q1.marker, q1.marker)
+		err := cluster.DestroyNamespace(namespace, q1.marker)
 		if err != nil {
 			log.Fatalf("Error deleting namespace:", err)
 		}
 	}
 
 	// Remove Q1 dir
-	if _, err := os.Stat(marker); os.IsNotExist(err) {
-		fmt.Printf("[%s] Answer directory is already gone!\n", marker)
+	if _, err := os.Stat(q1.marker); os.IsNotExist(err) {
+		fmt.Printf("[%s] Answer directory is already gone!\n", q1.marker)
 	} else {
-		err = os.RemoveAll(marker)
+		err = os.RemoveAll(q1.marker)
 		if err != nil {
 			log.Fatalf("Failed to remove Q1 dir: %v", err)
 		}
 	}
 
-	fmt.Printf("[%s] Successfully unstaged %s scenario!\n", marker, marker)
+	fmt.Printf("[%s] Successfully unstaged %s scenario!\n", q1.marker, q1.marker)
 }
 
 func ValidateQ1() {
-	fmt.Printf("[%s] Validating Kubernetes Question 1...\n", marker)
+	fmt.Printf("[%s] Validating Kubernetes Question 1...\n", q1.marker)
 
 	// Check if "Q1/namespaces.txt" exists
-	if _, err := os.Stat(fmt.Sprintf("%s/namespaces.txt", marker)); os.IsNotExist(err) {
-		fmt.Printf("[%s] %s/namespaces.txt not found. TRY AGAIN!\n", marker, marker)
+	if _, err := os.Stat(fmt.Sprintf("%s/namespaces.txt", q1.marker)); os.IsNotExist(err) {
+		fmt.Printf("[%s] %s/namespaces.txt not found. TRY AGAIN!\n", q1.marker, q1.marker)
 		os.Exit(0)
 	} else {
-		fmt.Printf("[%s] %s/namespaces.txt found!\n", marker, marker)
+		fmt.Printf("[%s] %s/namespaces.txt found!\n", q1.marker, q1.marker)
 	}
 
 	// Check if namespaces exist in the file
@@ -124,7 +130,7 @@ func ValidateQ1() {
 	}
 
 	// Read the file into a map for quick lookup
-	answerFile := fmt.Sprintf("%s/namespaces.txt", marker)
+	answerFile := fmt.Sprintf("%s/namespaces.txt", q1.marker)
 	file, err := os.Open(answerFile)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
@@ -157,7 +163,7 @@ func ValidateQ1() {
 		}
 	}
 	// Print validation complete
-	fmt.Printf("[%s] namespace check suceeded!\n", marker)
-	success := fmt.Sprintf(`[%s] %sValidation complete!`, marker, green)
+	fmt.Printf("[%s] namespace check suceeded!\n", q1.marker)
+	success := fmt.Sprintf(`[%s] %sValidation complete!`, q1.marker, green)
 	fmt.Println(success)
 }

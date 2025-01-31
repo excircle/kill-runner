@@ -27,8 +27,8 @@ var startCmd = &cobra.Command{
 		switch question {
 		case "q1":
 			questions.StartQ1()
-		// case "q2":
-		// 	questions.StartQ2()
+		case "q2":
+			questions.StartQ2()
 		// case "q3":
 		// 	questions.StartQ3()
 		default:
