@@ -29,8 +29,8 @@ logic for the specified question. Example usage:
 			questions.StageQ1()
 		case "q2":
 			questions.StageQ2()
-		// case "q3":
-		// 	questions.StageQ3()
+		case "q3":
+			questions.StageQ3()
 		default:
 			fmt.Println("Invalid question. Please use q1, q2, or q3.")
 			os.Exit(1)

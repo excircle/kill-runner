@@ -126,7 +126,7 @@ func ValidateQ1() {
 	// Check if namespaces exist in the file
 	namespaces := []string{
 		"calico-apiserver", "calico-system", "default", "kube-node-lease",
-		"kube-public", "kube-system", "local-path-storage", "q1-namespace", "tigera-operator",
+		"kube-public", "kube-system", "local-path-storage", "q1-ns", "tigera-operator",
 	}
 
 	// Read the file into a map for quick lookup
