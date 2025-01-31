@@ -13,3 +13,7 @@ func SetGlobalLogLevel(level int) {
 func SetGlobalKubeConfig(path string) {
 	Kubeconfig = path
 }
+
+func GetGlobalKubeConfig() string {
+	return Kubeconfig
+}

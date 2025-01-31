@@ -29,7 +29,7 @@ func KubeConnect(kubeconfig string) error {
 		log.Fatalf("Failed to create Kubernetes client: %v", err)
 	}
 
-	// Attempt to list nodes to validate the connection
+	// Attempt to validate the connection
 	nodes, err := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		log.Fatalf("Failed to list nodes: %v", err)

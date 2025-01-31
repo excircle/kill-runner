@@ -2,31 +2,35 @@ package questions
 
 import (
 	"fmt"
+
+	"github.com/excircle/kill-runner/pkg/cluster"
 )
+
+var marker string = "Q1"
 
 // StageQ1 runs the logic for question 1
 func StageQ1() {
-	fmt.Println("Staging Kubernetes Question 1...")
+	fmt.Printf("[%s] Staging Scenario 1...\n", marker)
 
-	// Example: Interacting with Kubernetes
-	// err := cluster.SetupNamespace("q1-namespace")
-	// if err != nil {
-	// 	fmt.Println("Error setting up namespace:", err)
-	// 	return
-	// }
+	// Creates additional namespace to check for in scenario
+	err := cluster.CreateNamespace("q1-namespace", marker)
+	if err != nil {
+		fmt.Println("Error setting up namespace:", err)
+		return
+	}
 
-	fmt.Println("Successfully staged q1!")
+	fmt.Printf("[%s] Successfully staged Q1 scenario!\n", marker)
 }
 
 func UnstageQ1() {
-	fmt.Println("Unstaging Kubernetes Question 1...")
+	fmt.Printf("[%s] Unstaging Kubernetes Question 1...\n", marker)
 
-	// Example: Interacting with Kubernetes
-	// err := cluster.DeleteNamespace("q1-namespace")
-	// if err != nil {
-	// 	fmt.Println("Error deleting namespace:", err)
-	// 	return
-	// }
+	// Undo Q1 scenario
+	err := cluster.DestroyNamespace("q1-namespace", marker)
+	if err != nil {
+		fmt.Println("Error deleting namespace:", err)
+		return
+	}
 
-	fmt.Println("Successfully unstaged q1!")
+	fmt.Printf("[%s] Successfully unstaged %s scenario!\n", marker, marker)
 }
