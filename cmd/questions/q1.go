@@ -158,14 +158,6 @@ func ValidateQ1() {
 	}
 	// Print validation complete
 	fmt.Printf("[%s] namespace check suceeded!\n", marker)
-	//fmt.Printf("[%s] Validation complete!\n", marker)
 	success := fmt.Sprintf(`[%s] %sValidation complete!`, marker, green)
 	fmt.Println(success)
-	// 	fmt.Sprintf(`#----------------------------------
-	// # Scenario 1 - Obtain Namespaces
-	// #----------------------------------
-
-	// %sCONTEXT%s:   The DevOps team would like to get the list of all Namespaces in the present working cluster.
-	// %sOBJECTIVE%s: Get the list and save it to './q1/namespaces.txt'.
-	// `, red, reset, green, reset)
 }
