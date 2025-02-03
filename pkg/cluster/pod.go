@@ -17,6 +17,21 @@ func PodExists(podName string, namespace string) bool {
 	return err == nil
 }
 
+// CheckPodRunning checks if a Kubernetes pod is running
+func CheckPodRunning(podName string, namespace string) bool {
+	clientset, err := getKubernetesClient()
+	if err != nil {
+		return false
+	}
+
+	pod, err := clientset.CoreV1().Pods(namespace).Get(context.TODO(), podName, metav1.GetOptions{})
+	if err != nil {
+		return false
+	}
+
+	return pod.Status.Phase == "Running"
+}
+
 // checkPodForContainer checks if a specific container exists within a given pod// checkPodForContainer checks if a specific container exists within a given pod
 func CheckPodForContainer(podName string, containerName string, namespace string) bool {
 	clientset, err := getKubernetesClient()
