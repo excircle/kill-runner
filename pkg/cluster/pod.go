@@ -58,3 +58,18 @@ func CheckContainerForImage(podName string, containerName string, namespace stri
 
 	return false
 }
+
+// CheckPodsNode retrieves the node on which a pod is running
+func CheckPodsNode(namespace string, podName string) (string, bool) {
+	clientset, err := getKubernetesClient()
+	if err != nil {
+		return "", false
+	}
+
+	pod, err := clientset.CoreV1().Pods(namespace).Get(context.TODO(), podName, metav1.GetOptions{})
+	if err != nil {
+		return "", false
+	}
+
+	return pod.Spec.NodeName, true
+}
