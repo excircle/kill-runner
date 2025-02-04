@@ -22,17 +22,25 @@ var q3 = q3vars{
 	scenario: "3",
 	skip:     false,
 	prompt: fmt.Sprintf(`#----------------------------------
-# Scenario 3 - Create A Single Job
+# Scenario 3 - Pod Ready if Service is reachable
 #----------------------------------
 
-%sCONTEXT%s:   Create a Job and Validate It's Output
-%sOBJECTIVE%s: 
+%sCONTEXT%s:   Create some pods that implement liveness and readiness probes
+%sOBJECTIVE 1%s: 
 
-- Create a Job template located at %s
-- This Job should run image %s and execute %s
-- It should run a total of %s and should %s in parallel.
-- Each pod created by the Job should have the name and label 'id' == %s.
-`, red, reset, green, reset, highlight("Q3/job.yaml", "green"), highlight("busybox:1.31.0", "green"), highlight("sleep 2 && echo 'done'", "green"), highlight("3 times", "green"), highlight("execute 2 runs", "green"), highlight("awesome-job", "green")),
+- Create a Pod called %s
+- This Pod should be of image %s
+- Configure a LivenessProbe which simply executes command %s.
+- Configure a ReadinessProbe which does check if the url %s is reachable .
+- Validate using %s for this
+
+%s:
+
+- Create a second pod called %s
+- This Pod should be of image %s
+- This Pod should have label %s
+
+`, red, reset, green, reset, highlight("ready-if-service-ready", "green"), highlight("nginx:1.16.1-alpine", "green"), highlight("true", "green"), highlight("http://service-am-i-ready:80", "green"), highlight("wget -T2 -O- http://service-am-i-ready:80", "green"), highlight("OBJECTIVE 2:", "green"), highlight("am-i-ready", "green"), highlight("nginx:1.16.1-alpine", "green"), highlight("label", "green")),
 	jobfile: "job.yaml",
 }
 
@@ -80,6 +88,24 @@ func StageQ3() {
 		}
 
 	}
+
+	// Create SVC that exposes the pod
+	svcName := "service-am-i-ready"
+	port := int32(80)
+	targetPort := int32(80)
+	exposeType := "NodePort"
+	podName := "am-i-ready"
+	if !cluster.CheckService(namespace, svcName) {
+		fmt.Printf("[%s] Creating service %s!\n", q3.marker, svcName)
+		err := cluster.ExposePod(namespace, podName, svcName, port, targetPort, exposeType)
+		if err != nil {
+			fmt.Println("Error creating service:", err)
+			return
+		}
+	} else {
+		fmt.Printf("[%s] Service %s exists!\n", q3.marker, svcName)
+	}
+
 	fmt.Printf("[%s] Successfully staged %s scenario!\n", q3.marker, q3.marker)
 	fmt.Printf("[%s] Please run 'kr start %s'!\n", q3.marker, strings.ToLower(q3.marker))
 
@@ -131,52 +157,52 @@ func ValidateQ3() {
 		fmt.Printf("[%s] Namespace %s exists!\n", q3.marker, namespace)
 	}
 
-	// Validate that job.yaml exists in Q3 dir
-	pwd, err := os.Getwd()
-	if err != nil {
-		log.Fatalf("Failed to get present working directory: %v", err)
-	}
-
-	jobPath := fmt.Sprintf("%s/%s/job.yaml", pwd, q3.marker)
-	if _, err := os.Stat(jobPath); os.IsNotExist(err) {
-		msg := fmt.Sprintf("[%s] %s does not exist!\n", q3.marker, q3.jobfile)
+	// Validate that the service exists
+	svcName := "service-am-i-ready"
+	if !cluster.CheckService(namespace, svcName) {
+		msg := fmt.Sprintf("[%s] Service %s does not exist!\n", q3.marker, svcName)
 		fmt.Println(highlight(msg, "red"))
 		os.Exit(0)
 	} else {
-		fmt.Printf("[%s] %s exists!\n", q3.marker, q3.jobfile)
+		fmt.Printf("[%s] Service %s exists!\n", q3.marker, svcName)
 	}
 
-	// Validate job exists
-	jobName := "awesome-job"
-	if !cluster.CheckJobExists(namespace, jobName) {
-		msg := fmt.Sprintf("[%s] Job %s does not exist!\n", q3.marker, jobName)
+	// Validate that ready-if-service-ready pod exists
+	podName := "ready-if-service-ready"
+	if !cluster.PodExists(podName, namespace) {
+		msg := fmt.Sprintf("[%s] Pod %s does not exist!\n", q3.marker, podName)
 		fmt.Println(highlight(msg, "red"))
 		os.Exit(0)
 	} else {
-		fmt.Printf("[%s] Job %s exists!\n", q3.marker, jobName)
+		fmt.Printf("[%s] Pod %s exists!\n", q3.marker, podName)
 	}
 
-	// Validate job container image
-	jobImage := "busybox:1.31.0"
-	if !cluster.CheckContainerJobsForImage(namespace, "awesome-job", jobImage) {
-		msg := fmt.Sprintf("[%s] Job does not contain image %s!\n", q3.marker, jobImage)
+	// Validate that ready-if-service-ready pod is running
+	if !cluster.CheckPodRunning(podName, namespace) {
+		msg := fmt.Sprintf("[%s] Pod %s is not running!\n", q3.marker, podName)
 		fmt.Println(highlight(msg, "red"))
 		os.Exit(0)
 	} else {
-		fmt.Printf("[%s] Job contains image %s!\n", q3.marker, jobImage)
+		fmt.Printf("[%s] Pod %s is running!\n", q3.marker, podName)
 	}
 
-	// Validate job spec
-	parallelism := int32(2)
-	completions := int32(3)
-	label := "awesome-job"
-	jobStatus, issue := cluster.CheckJobSpec(namespace, jobName, parallelism, completions, label)
-	if !jobStatus {
-		msg := fmt.Sprintf("[%s] Job spec does not match! Issue with %s\n", q3.marker, issue)
+	// Validate that am-i-ready pod exists
+	podName = "am-i-ready"
+	if !cluster.PodExists(podName, namespace) {
+		msg := fmt.Sprintf("[%s] Pod %s does not exist!\n", q3.marker, podName)
 		fmt.Println(highlight(msg, "red"))
 		os.Exit(0)
 	} else {
-		fmt.Printf("[%s] Job spec matches!\n", q3.marker)
+		fmt.Printf("[%s] Pod %s exists!\n", q3.marker, podName)
+	}
+
+	// Validate that am-i-ready pod is running
+	if !cluster.CheckPodRunning(podName, namespace) {
+		msg := fmt.Sprintf("[%s] Pod %s is not running!\n", q3.marker, podName)
+		fmt.Println(highlight(msg, "red"))
+		os.Exit(0)
+	} else {
+		fmt.Printf("[%s] Pod %s is running!\n", q3.marker, podName)
 	}
 
 	// Print validation complete

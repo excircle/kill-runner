@@ -1,11 +1,9 @@
 package questions
 
 import (
-	"bufio"
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/excircle/kill-runner/pkg/cluster"
 )
@@ -22,12 +20,16 @@ var q1 = q1vars{
 	scenario: "1",
 	skip:     false,
 	prompt: fmt.Sprintf(`#----------------------------------
-# Scenario 1 - Obtain Namespaces
+# Scenario 1 - Schedule Pod On Control Plane Node
 #----------------------------------
 
-%sCONTEXT%s:   The DevOps team would like to get the list of all Namespaces in the present working cluster.
-%sOBJECTIVE%s: Get the list and save it to './q1/namespaces.txt'.
-`, red, reset, green, reset),
+%sCONTEXT%s:   Demonstrate your ability to schedule a Kubernetes pod on a control plane node.
+%sOBJECTIVE%s: 
+- Create a single Pod of image %s
+- The pod should be called %s
+- The container should be called %s
+- This pod must be on the %s
+`, red, reset, green, reset, highlight("httpd:2.4.41-alpine", "green"), highlight("pod1", "green"), highlight("pod1-container", "green"), highlight("control plane node", "green")),
 }
 
 // StageQ1 runs the logic for question 1
@@ -115,53 +117,37 @@ func UnstageQ1() {
 func ValidateQ1() {
 	fmt.Printf("[%s] Validating Kubernetes Question 1...\n", q1.marker)
 
-	// Check if "Q1/namespaces.txt" exists
-	if _, err := os.Stat(fmt.Sprintf("%s/namespaces.txt", q1.marker)); os.IsNotExist(err) {
-		fmt.Printf("[%s] %s/namespaces.txt not found. TRY AGAIN!\n", q1.marker, q1.marker)
-		os.Exit(0)
+	// Check that 'pod1' exists
+	if !cluster.PodExists("pod1", "q1-ns") {
+		fmt.Printf("[%s] Pod 'pod1' does not exist!\n", q1.marker)
+		os.Exit(1)
 	} else {
-		fmt.Printf("[%s] %s/namespaces.txt found!\n", q1.marker, q1.marker)
+		fmt.Printf("[%s] Pod 'pod1' exists!\n", q1.marker)
 	}
 
-	// Check if namespaces exist in the file
-	namespaces := []string{
-		"calico-apiserver", "calico-system", "default", "kube-node-lease",
-		"kube-public", "kube-system", "local-path-storage", "q1-ns", "tigera-operator",
+	// Check that pod1 is running httpd:2.4.41-alpine
+	if !cluster.CheckContainerForImage("pod1", "pod1-container", "q1-ns", "httpd:2.4.41-alpine") {
+		fmt.Printf("[%s] Pod 'pod1' is not running httpd:2.4.41-alpine!\n", q1.marker)
+		os.Exit(1)
+	} else {
+		fmt.Printf("[%s] Pod 'pod1' is running httpd:2.4.41-alpine!\n", q1.marker)
 	}
 
-	// Read the file into a map for quick lookup
-	answerFile := fmt.Sprintf("%s/namespaces.txt", q1.marker)
-	file, err := os.Open(answerFile)
-	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return
+	// Check pod1 for container 'pod1-container'
+	if !cluster.CheckPodForContainer("pod1", "pod1-container", "q1-ns") {
+		fmt.Printf("[%s] Pod 'pod1' does not have container 'pod1-container'!\n", q1.marker)
+		os.Exit(1)
+	} else {
+		fmt.Printf("[%s] Pod 'pod1' has container 'pod1-container'!\n", q1.marker)
 	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	var lines []string
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading file:", err)
-		return
+	// Check that pod1 is on the control plane node
+	if node, ok := cluster.CheckPodsNode("q1-ns", "pod1"); !ok {
+		fmt.Printf("[%s] Pod 'pod1' is not on the control plane node!\n", q1.marker)
+		os.Exit(1)
+	} else {
+		fmt.Printf("[%s] Pod 'pod1' is on the control plane node %s!\n", q1.marker, node)
 	}
 
-	// Search for terms
-	for _, ns := range namespaces {
-		found := false
-		for _, line := range lines {
-			if strings.Contains(line, ns) {
-				found = true
-			}
-		}
-		if !found {
-			fmt.Printf("[FAILURE] namespace not found. TRY AGAIN!\n")
-			os.Exit(0)
-		}
-	}
 	// Print validation complete
 	fmt.Printf("[%s] namespace check suceeded!\n", q1.marker)
 	success := fmt.Sprintf(`[%s] %sValidation complete!`, q1.marker, green)

@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/excircle/kill-runner/pkg/cluster"
-	"github.com/excircle/kill-runner/pkg/utils"
 )
 
 type q2vars struct {
@@ -22,16 +21,15 @@ var q2 = q2vars{
 	scenario: "2",
 	skip:     false,
 	prompt: fmt.Sprintf(`#----------------------------------
-# Scenario 2 - Create A Single Pod
+# Scenario 2 - Scale Down Stateful Set
 #----------------------------------
 
-%sCONTEXT%s:   Create a Pod and create a BASH script to assist your manager check data
+%sCONTEXT%s:   Management has asked you scale down pods in order to save resource
 %sOBJECTIVE%s: 
 
-- Create a single Pod of image %s in Namespace '%s'.
-- The Pod should be named '%s' and the container should be named '%s'.
-- Write a command that provides the status of this pod  into './Q2/pod1-status-command.sh'. The command should use kubectl.
-`, red, reset, green, reset, highlight("httpd:2.4.41-alpine", "green"), highlight("q2-ns", "green"), highlight("pod1", "green"), highlight("pod1-container", "green")),
+- Find the deployment called %s
+- Ensure that the deployment is running %s
+`, red, reset, green, reset, highlight("o3db", "green"), highlight("1 replica", "green")),
 }
 
 // Stageq2 runs the logic for question 2
@@ -78,6 +76,22 @@ func StageQ2() {
 		}
 
 	}
+
+	// Create o3db deployment using CreateDeployment() func
+	deploymentName := "o3db"
+	deployImage := "nginx"
+	replicas := int32(3)
+	if cluster.CheckDeployment(namespace, deploymentName) {
+		fmt.Printf("[%s] Deployment %s exists!\n", q2.marker, deploymentName)
+	} else {
+		fmt.Printf("[%s] Creating deployment %s!\n", q2.marker, deploymentName)
+		err := cluster.CreateDeployment(namespace, deploymentName, deployImage, replicas)
+		if err != nil {
+			fmt.Println("Error creating deployment:", err)
+			return
+		}
+	}
+
 	fmt.Printf("[%s] Successfully staged %s scenario!\n", q2.marker, q2.marker)
 	fmt.Printf("[%s] Please run 'kr start %s'!\n", q2.marker, strings.ToLower(q2.marker))
 
@@ -129,49 +143,24 @@ func ValidateQ2() {
 		fmt.Printf("[%s] Namespace %s exists!\n", q2.marker, namespace)
 	}
 
-	// Validate that pod1 pod exists
-	podName := "pod1"
-	if !cluster.PodExists(podName, namespace) {
-		msg := fmt.Sprintf("[%s] Pod %s does not exist!\n", q2.marker, podName)
+	// Validate that the deployment exists
+	deploymentName := "o3db"
+	if !cluster.CheckDeployment(namespace, deploymentName) {
+		msg := fmt.Sprintf("[%s] Deployment %s does not exist!\n", q2.marker, deploymentName)
 		fmt.Println(highlight(msg, "red"))
 		os.Exit(0)
 	} else {
-		fmt.Printf("[%s] Pod %s exists!\n", q2.marker, podName)
+		fmt.Printf("[%s] Deployment %s exists!\n", q2.marker, deploymentName)
 	}
 
-	// Check that pod1 has a container called pod1-container
-	containerName := "pod1-container"
-	if !cluster.CheckPodForContainer(podName, containerName, namespace) {
-		msg := fmt.Sprintf("[%s] Container %s does not exist in Pod %s!\n", q2.marker, containerName, podName)
+	// Validate that the deployment has 1 replica
+	expectedReplicas := int32(1)
+	if !cluster.CheckReplicaCount(namespace, deploymentName, expectedReplicas) {
+		msg := fmt.Sprintf("[%s] Deployment %s does not have %d replicas!\n", q2.marker, deploymentName, expectedReplicas)
 		fmt.Println(highlight(msg, "red"))
 		os.Exit(0)
 	} else {
-		fmt.Printf("[%s] Container %s exists in Pod %s!\n", q2.marker, containerName, podName)
-	}
-
-	// Check that pod1-container is running the httpd:2.4.41-alpine image
-	imageName := "httpd:2.4.41-alpine"
-	if !cluster.CheckContainerForImage(podName, containerName, namespace, imageName) {
-		msg := fmt.Sprintf("[%s] Container %s in Pod %s is not running image %s!\n", q2.marker, containerName, podName, imageName)
-		fmt.Println(highlight(msg, "red"))
-		os.Exit(0)
-	} else {
-		fmt.Printf("[%s] Container %s in Pod %s is running image %s!\n", q2.marker, containerName, podName, imageName)
-	}
-
-	// Check that file ./Q2/pod1-status-command.sh contains string "Running"
-	pwd, err := os.Getwd()
-	if err != nil {
-		log.Fatalf("Failed to get present working directory: %v", err)
-	}
-
-	filePath := fmt.Sprintf("%s/%s/pod1-status-command.sh", pwd, q2.marker)
-	if !utils.FileContainsString(filePath, "Running") {
-		msg := fmt.Sprintf("[%s] %s does not contain string 'Running'!\n", q2.marker, filePath)
-		fmt.Println(highlight(msg, "red"))
-		os.Exit(0)
-	} else {
-		fmt.Printf("[%s] %s contains string 'Running'!\n", q2.marker, filePath)
+		fmt.Printf("[%s] Deployment %s has %d replicas!\n", q2.marker, deploymentName, expectedReplicas)
 	}
 
 	// Print validation complete
