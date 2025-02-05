@@ -31,6 +31,10 @@ logic for the specified question. Example usage:
 			questions.UnstageQ2()
 		case "q3":
 			questions.UnstageQ3()
+		case "q4":
+			questions.UnstageQ4()
+		case "q6":
+			questions.UnstageQ6()
 		default:
 			fmt.Println("Invalid question. Please use q1, q2, or q3.")
 			os.Exit(1)
