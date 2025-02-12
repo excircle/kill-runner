@@ -35,6 +35,10 @@ var startCmd = &cobra.Command{
 			questions.StartQ4()
 		case "q6":
 			questions.StartQ6()
+		case "q7":
+			questions.StartQ7()
+		case "q8":
+			questions.StartQ8()
 		default:
 			fmt.Println("Invalid question. Please use q1, q2, or q3.")
 			os.Exit(1)
