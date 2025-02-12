@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -32,7 +33,7 @@ func CheckPodRunning(podName string, namespace string) bool {
 	return pod.Status.Phase == "Running"
 }
 
-// checkPodForContainer checks if a specific container exists within a given pod// checkPodForContainer checks if a specific container exists within a given pod
+// CheckPodForContainer checks if a specific container exists within a given pod
 func CheckPodForContainer(podName string, containerName string, namespace string) bool {
 	clientset, err := getKubernetesClient()
 	if err != nil {
@@ -87,4 +88,31 @@ func CheckPodsNode(namespace string, podName string) (string, bool) {
 	}
 
 	return pod.Spec.NodeName, true
+}
+
+// CheckContainerEnv determines if a container has a specific environment variable set to a specified value
+func CheckContainerEnv(namespace string, podName string, containerName string, envName string, envValue string) bool {
+	clientset, err := getKubernetesClient()
+	if err != nil {
+		return false
+	}
+
+	pod, err := clientset.CoreV1().Pods(namespace).Get(context.TODO(), podName, metav1.GetOptions{})
+	if err != nil {
+		return false
+	}
+
+	for _, container := range pod.Spec.Containers {
+		fmt.Println(container.Name)
+		if container.Name == containerName {
+			fmt.Println("env.Name", envName, "env.Value", envValue)
+			for _, env := range container.Env {
+				if env.Name == envName && env.Value == envValue {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
 }
